@@ -99,6 +99,9 @@ class Game:
         self.screenshake = 0
 
     def run(self):
+
+        # menu code or just call run method when i press play button, so instead of running Game().run() i run Game().menu()
+
         pygame.mixer.music.load('data/music.wav')
         pygame.mixer.music.set_volume(0.5)
         pygame.mixer.music.play(-1)
