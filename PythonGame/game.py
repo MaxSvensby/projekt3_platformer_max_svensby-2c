@@ -11,6 +11,7 @@ from scripts.tilemap import Tilemap
 from scripts.clouds import Clouds
 from scripts.particle import Particle
 from scripts.spark import Spark
+from scripts.button import Button
 
 
 class Game: 
@@ -18,11 +19,14 @@ class Game:
         pygame.init()
 
         pygame.display.set_caption('Ninja game')
-        self.screen = pygame.display.set_mode((640, 480))
+        self.screen = pygame.display.set_mode((960, 720)) #640, 480
         self.display = pygame.Surface((320, 240), pygame.SRCALPHA)
         self.display_2 = pygame.Surface((320, 240))
+        self.display_menu = pygame.Surface((320, 240))
 
         self.clock = pygame.time.Clock()
+
+        self.fullscreen = False
 
         self.movement = [False, False]
 
@@ -47,6 +51,12 @@ class Game:
             'projectile': load_image('projectile.png'),
         }
 
+        self.buttons = {
+            'start': load_image('buttons/start_btn.png'),
+            'exit': load_image('buttons/exit_btn.png'),
+            '1': load_image('buttons/button1.png'),
+        }
+
         self.sfx = {
             'jump': pygame.mixer.Sound('data/sfx/jump.wav'),
             'dash': pygame.mixer.Sound('data/sfx/dash.wav'),
@@ -69,6 +79,64 @@ class Game:
 
         self.level = 0
         self.load_level(self.level)
+
+    def main_menu(self):
+
+        play_button = Button((self.screen.get_width() / 2) - (self.buttons['start'].get_width() // (2 / 0.8)), 250, self.buttons['start'], 0.8)
+        exit_button = Button((self.screen.get_width() / 2) - (self.buttons['exit'].get_width() // (2 / 0.8)), 450, self.buttons['exit'], 0.8)
+
+        run = True
+        while run:
+            self.display_menu.blit(self.assets['background'], (0,0))
+            self.clouds.update()
+            self.clouds.render(self.display_menu, (0,0))
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+            self.screen.blit(pygame.transform.scale(self.display_menu, self.screen.get_size()), (0,0))
+
+            if play_button.draw(self.screen):
+                run = False
+                self.play_menu()
+
+            exit_button.draw(self.screen)
+
+            pygame.display.update()
+            self.clock.tick(60)
+
+    def play_menu(self):
+
+        button_1 = Button(50, 50, self.buttons['1'], 5)
+
+        run = True
+        while run:
+            self.display_menu.blit(self.assets['background'], (0,0))
+            self.clouds.update()
+            self.clouds.render(self.display_menu, (0,0))
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        run = False
+                        self.main_menu()
+
+            self.screen.blit(pygame.transform.scale(self.display_menu, self.screen.get_size()), (0,0))
+
+            if button_1.draw(self.screen):
+                run = False
+                self.level = 1
+                self.load_level(self.level)
+                self.run()
+
+            pygame.display.update()
+            self.clock.tick(60)
 
 
     def load_level(self, map_id):
@@ -108,7 +176,8 @@ class Game:
 
         self.sfx['ambience'].play(-1)
 
-        while True:
+        run = True
+        while run:
             self.display.fill((0,0,0,0))
             self.display_2.blit(self.assets['background'], (0, 0))
 
@@ -190,7 +259,7 @@ class Game:
                 for offset in [(-1,0), (1,0), (0,-1), (0,1)]:
                     self.display_2.blit(display_sillhouette, offset)
             else:
-                self.display_2.blit(display_sillhouette, (0,0))
+                self.display_2.blit(display_sillhouette, offset)
 
             for particle in self.particles.copy():
                 kill = particle.update()
@@ -219,6 +288,19 @@ class Game:
                             self.sfx['jump'].play()
                     if event.key == pygame.K_p:
                         self.player.dash()
+                    if event.key == pygame.K_u:
+                        self.underwater = not self.underwater
+                    if event.key == pygame.K_f:
+                        self.fullscreen = not self.fullscreen
+                        if self.fullscreen:
+                            self.screen = pygame.display.set_mode((960, 720), pygame.FULLSCREEN)
+                        else:
+                            self.screen = pygame.display.set_mode((960, 720))
+                    if event.key == pygame.K_ESCAPE:
+                        run = False
+                        self.sfx['ambience'].stop()
+                        pygame.mixer.music.stop()
+                        self.main_menu()
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_a:
                         self.movement[0] = False
@@ -239,4 +321,4 @@ class Game:
             pygame.display.update()
             self.clock.tick(60)
 
-Game().run()
+Game().main_menu()
