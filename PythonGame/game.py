@@ -94,8 +94,10 @@ class Game:
             pygame.mixer.music.play(-1, 0, 4000)
             self.main_menu_music_playing = True
 
-        logo_button = Button((self.screen.get_width() / 2) - (self.buttons['logo'].get_width() // (2 / 10)), 50, self.buttons['logo'], self.buttons['logo'], 10)
-        play_button = Button((self.screen.get_width() / 2) - (self.buttons['play1'].get_width() // (2 / 5)), 200, self.buttons['play1'], self.buttons['play1_hov'], 5)
+        logo = Button((self.screen.get_width() / 2) - (self.buttons['logo'].get_width() // (2 / 10)), 50, self.buttons['logo'], self.buttons['logo'], 10)
+        play_button = Button((self.screen.get_width() / 2) - (self.buttons['play1'].get_width() // (2 / 5)), 250, self.buttons['play1'], self.buttons['play1_hov'], 5)
+        play1_button = Button((self.screen.get_width() / 2) - (self.buttons['play1'].get_width() // (2 / 5)), 400, self.buttons['play1'], self.buttons['play1_hov'], 5)
+        play2_button = Button((self.screen.get_width() / 2) - (self.buttons['play1'].get_width() // (2 / 5)), 550, self.buttons['play1'], self.buttons['play1_hov'], 5)
 
         run = True
         while run:
@@ -114,7 +116,11 @@ class Game:
                 run = False
                 self.play_menu()
 
-            logo_button.draw(logo_button.hover(), self.screen)
+            play1_button.draw(play1_button.hover(), self.screen)
+
+            play2_button.draw(play2_button.hover(), self.screen)
+
+            logo.draw(logo.hover(), self.screen)
 
             pygame.display.update()
             self.clock.tick(60)
