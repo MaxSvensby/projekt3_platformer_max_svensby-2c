@@ -27,6 +27,7 @@ class Game:
         self.clock = pygame.time.Clock()
 
         self.fullscreen = False
+        self.main_menu_music_playing = False
 
         self.movement = [False, False]
 
@@ -55,6 +56,11 @@ class Game:
             'start': load_image('buttons/start_btn.png'),
             'exit': load_image('buttons/exit_btn.png'),
             '1': load_image('buttons/button1.png'),
+            'play': load_image('buttons/play.png'),
+            'logo': load_image('buttons/logo.png'),
+            'test': load_image('buttons/test.png'),
+            'play1': load_image('buttons/play1.png'),
+            'play1_hov': load_image('buttons/play1_hov.png'),
         }
 
         self.sfx = {
@@ -82,8 +88,14 @@ class Game:
 
     def main_menu(self):
 
-        play_button = Button((self.screen.get_width() / 2) - (self.buttons['start'].get_width() // (2 / 0.8)), 250, self.buttons['start'], 0.8)
-        exit_button = Button((self.screen.get_width() / 2) - (self.buttons['exit'].get_width() // (2 / 0.8)), 450, self.buttons['exit'], 0.8)
+        if not self.main_menu_music_playing:
+            pygame.mixer.music.load('data/main_menu_music.wav')
+            pygame.mixer.music.set_volume(0.2)
+            pygame.mixer.music.play(-1, 0, 4000)
+            self.main_menu_music_playing = True
+
+        logo_button = Button((self.screen.get_width() / 2) - (self.buttons['logo'].get_width() // (2 / 10)), 50, self.buttons['logo'], self.buttons['logo'], 10)
+        play_button = Button((self.screen.get_width() / 2) - (self.buttons['play1'].get_width() // (2 / 5)), 200, self.buttons['play1'], self.buttons['play1_hov'], 5)
 
         run = True
         while run:
@@ -98,18 +110,18 @@ class Game:
 
             self.screen.blit(pygame.transform.scale(self.display_menu, self.screen.get_size()), (0,0))
 
-            if play_button.draw(self.screen):
+            if play_button.draw(play_button.hover(), self.screen):
                 run = False
                 self.play_menu()
 
-            exit_button.draw(self.screen)
+            logo_button.draw(logo_button.hover(), self.screen)
 
             pygame.display.update()
             self.clock.tick(60)
 
     def play_menu(self):
 
-        button_1 = Button(50, 50, self.buttons['1'], 5)
+        button_1 = Button(50, 50, self.buttons['1'], self.buttons['1'], 5)
 
         run = True
         while run:
@@ -129,7 +141,7 @@ class Game:
 
             self.screen.blit(pygame.transform.scale(self.display_menu, self.screen.get_size()), (0,0))
 
-            if button_1.draw(self.screen):
+            if button_1.draw(button_1.hover(), self.screen):
                 run = False
                 self.level = 1
                 self.load_level(self.level)
@@ -170,9 +182,12 @@ class Game:
 
         # menu code or just call run method when i press play button, so instead of running Game().run() i run Game().menu()
 
+        pygame.mixer.music.fadeout(500)
+
         pygame.mixer.music.load('data/music.wav')
         pygame.mixer.music.set_volume(0.5)
-        pygame.mixer.music.play(-1)
+        pygame.mixer.music.play(-1, 0, 2000)
+        self.main_menu_music_playing = False
 
         self.sfx['ambience'].play(-1)
 
