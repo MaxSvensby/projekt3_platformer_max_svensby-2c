@@ -33,11 +33,14 @@ class Game:
 
         self.assets = {
             'decor': load_images('tiles/decor'),
-            'grass': load_images('tiles/grass'),
+            'grass': load_images('tiles/grass_new'),
             'large_decor': load_images('tiles/large_decor'),
-            'stone': load_images('tiles/stone'),
+            'rocks': load_images('tiles/rocks'),
+            'bushes': load_images('tiles/bushes'),
+            'spikes': load_images('tiles/spikes'),
+            'stone': load_images('tiles/stone_new'),
             'player': load_image('entities/player.png'),
-            'background': load_image('background.png'),
+            'background': load_image('background_new.png'),
             'clouds': load_images('clouds'),
             'enemy/idle': Animation(load_images('entities/enemy/idle'), img_dur=6),
             'enemy/run': Animation(load_images('entities/enemy/run'), img_dur=4),
@@ -149,7 +152,7 @@ class Game:
 
             if button_1.draw(button_1.hover(), self.screen):
                 run = False
-                self.level = 1
+                self.level = 0
                 self.load_level(self.level)
                 self.run()
 

@@ -47,6 +47,17 @@ class PhysicsEntity:
                     self.collisions['left'] = True
                 self.pos[0] = entity_rect.x
 
+        entity_rect = self.rect()
+        for kill_rect in tilemap.kill_rects_around(self.pos):
+            if entity_rect.colliderect(kill_rect):
+                if frame_movement[0] > 0:
+                    entity_rect.right = kill_rect.left
+                    self.collisions['right'] = True
+                if frame_movement[0] < 0:
+                    entity_rect.left = kill_rect.right
+                    self.collisions['left'] = True
+                self.pos[0] = entity_rect.x
+
         self.pos[1] += frame_movement[1]
         entity_rect = self.rect()
         for rect in tilemap.physics_rects_around(self.pos):
@@ -156,6 +167,20 @@ class Player(PhysicsEntity):
             if not self.game.dead:
                 self.game.screenshake = max(16, self.game.screenshake)
             self.game.dead += 1
+
+        frame_movement = (movement[0] + self.velocity[0], movement[1] + self.velocity[1])
+
+        entity_rect = self.rect()
+        for kill_rect in tilemap.kill_rects_around(self.pos):
+            if entity_rect.colliderect(kill_rect):
+                if frame_movement[1] > 0:
+                    entity_rect.bottom = kill_rect.top
+                    self.collisions['down'] = True
+                    self.game.dead += 1
+                if frame_movement[1] < 0:
+                    entity_rect.top = kill_rect.bottom
+                    self.collisions['up'] = True
+                self.pos[1] = entity_rect.y
 
         if self.collisions['down']:
             self.air_time = 0

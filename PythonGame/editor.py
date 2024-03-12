@@ -20,9 +20,12 @@ class Editor:
 
         self.assets = {
             'decor': load_images('tiles/decor'),
-            'grass': load_images('tiles/grass'),
+            'grass': load_images('tiles/grass_new'),
             'large_decor': load_images('tiles/large_decor'),
-            'stone': load_images('tiles/stone'),
+            'rocks': load_images('tiles/rocks'),
+            'spikes': load_images('tiles/spikes'),
+            'bushes': load_images('tiles/bushes'),
+            'stone': load_images('tiles/stone_new'),
             'spawners': load_images('tiles/spawners'),
         }
 
@@ -115,7 +118,6 @@ class Editor:
                         self.clicking = False
                     if event.button == 3:
                         self.right_clicking = False
-
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_a:
