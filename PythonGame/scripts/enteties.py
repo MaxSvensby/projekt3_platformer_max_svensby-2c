@@ -38,73 +38,38 @@ class PhysicsEntity:
         # Horizontal collisions
         self.pos[0] += frame_movement[0]
         entity_rect = self.rect()
-        for rect in tilemap.physics_rects_around(self.pos)[0]:
-            if entity_rect.colliderect(rect):
-                if frame_movement[0] > 0:
-                    entity_rect.right = rect.left
-                    self.collisions['right'] = True
-                if frame_movement[0] < 0:
-                    entity_rect.left = rect.right
-                    self.collisions['left'] = True
-                self.pos[0] = entity_rect.x
-        for ver_kill_rect in tilemap.physics_rects_around(self.pos)[1]:
-            if entity_rect.colliderect(ver_kill_rect):
-                if frame_movement[0] > 0:
-                    entity_rect.right = ver_kill_rect.left
-                    self.collisions['right'] = True
-                if frame_movement[0] < 0:
-                    entity_rect.left = ver_kill_rect.right
-                    self.collisions['left'] = True
-                self.pos[0] = entity_rect.x
-        for hor_kill_rect in tilemap.physics_rects_around(self.pos)[2]:
-            if entity_rect.colliderect(hor_kill_rect):
-                if frame_movement[0] > 0:
-                    entity_rect.right = hor_kill_rect.left
-                    self.collisions['right'] = True
-                    if self.type == 'player':
-                        self.game.dead += 1
-                if frame_movement[0] < 0:
-                    entity_rect.left = hor_kill_rect.right
-                    self.collisions['left'] = True
-                    if self.type == 'player':
-                        self.game.dead += 1
-                self.pos[0] = entity_rect.x
+        for index, types in enumerate(tilemap.physics_rects_around(self.pos)):
+            for rect in types:
+                if entity_rect.colliderect(rect):
+                    if frame_movement[0] > 0:
+                        entity_rect.right = rect.left
+                        self.collisions['right'] = True
+                        if index == 2 and self.type == 'player':
+                            self.game.dead += 1
+                    if frame_movement[0] < 0:
+                        entity_rect.left = rect.right
+                        self.collisions['left'] = True
+                        if index == 2 and self.type == 'player':
+                            self.game.dead += 1
+                    self.pos[0] = entity_rect.x
 
         # Vertical collisions
         self.pos[1] += frame_movement[1]
         entity_rect = self.rect()
-        for rect in tilemap.physics_rects_around(self.pos)[0]:
-            if entity_rect.colliderect(rect):
-                if frame_movement[1] > 0:
-                    entity_rect.bottom = rect.top
-                    self.collisions['down'] = True
-                if frame_movement[1] < 0:
-                    entity_rect.top = rect.bottom
-                    self.collisions['up'] = True
-                self.pos[1] = entity_rect.y
-        for ver_kill_rect in tilemap.physics_rects_around(self.pos)[1]:
-            if entity_rect.colliderect(ver_kill_rect):
-                if frame_movement[1] > 0:
-                    entity_rect.bottom = ver_kill_rect.top
-                    self.collisions['down'] = True
-                    if self.type == 'player':
-                        self.game.dead += 1
-                if frame_movement[1] < 0:
-                    entity_rect.top = ver_kill_rect.bottom
-                    self.collisions['up'] = True
-                    if self.type == 'player':
-                        self.game.dead += 1
-                self.pos[1] = entity_rect.y
-        for hor_kill_rect in tilemap.physics_rects_around(self.pos)[2]:
-            if entity_rect.colliderect(hor_kill_rect):
-                if frame_movement[1] > 0:
-                    entity_rect.bottom = hor_kill_rect.top
-                    self.collisions['down'] = True
-                if frame_movement[1] < 0:
-                    entity_rect.top = hor_kill_rect.bottom
-                    self.collisions['up'] = True
-                self.pos[1] = entity_rect.y
-        
+        for index, types in enumerate(tilemap.physics_rects_around(self.pos)):
+            for rect in types:
+                if entity_rect.colliderect(rect):
+                    if frame_movement[1] > 0:
+                        entity_rect.bottom = rect.top
+                        self.collisions['down'] = True
+                        if index == 1 and self.type == 'player':
+                            self.game.dead += 1
+                    if frame_movement[1] < 0:
+                        entity_rect.top = rect.bottom
+                        self.collisions['up'] = True
+                        if index == 1 and self.type == 'player':
+                            self.game.dead += 1
+                    self.pos[1] = entity_rect.y
 
         if movement[0] > 0:
             self.flip = False
