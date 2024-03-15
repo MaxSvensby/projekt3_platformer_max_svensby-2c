@@ -37,10 +37,10 @@ class Game:
             'large_decor': load_images('tiles/large_decor'),
             'rocks': load_images('tiles/rocks'),
             'bushes': load_images('tiles/bushes'),
-            'spikes': load_images('tiles/top_spikes'),
-            'spikes_right': load_images('tiles/right_spikes'),
-            'spikes_bot': load_images('tiles/bot_spikes'),
-            'spikes_left': load_images('tiles/left_spikes'),
+            'spikes': load_images('tiles/all_spikes/top_spikes'),
+            'spikes_right': load_images('tiles/all_spikes/right_spikes'),
+            'spikes_bot': load_images('tiles/all_spikes/bot_spikes'),
+            'spikes_left': load_images('tiles/all_spikes/left_spikes'),
             'stone': load_images('tiles/stone_new'),
             'player': load_image('entities/player.png'),
             'background': load_image('background_new.png'),
@@ -275,7 +275,7 @@ class Game:
                             speed = random.random() * 5
                             self.sparks.append(Spark(self.player.rect().center, angle, 2 + random.random()))
                             self.particles.append(Particle(self, 'particle', self.player.rect().center, velocity=[math.cos(angle + math.pi) * speed * 0.5, math.sin(angle + math.pi) * speed * 0.5], frame=random.randint(0, 7)))
-                
+
             for spark in self.sparks.copy():
                 kill = spark.update()
                 spark.render(self.display, offset=render_scroll)
