@@ -47,8 +47,10 @@ class PhysicsEntity:
                     self.collisions['left'] = True
                 self.pos[0] = entity_rect.x
 
+        #kill rects collision
+        
         entity_rect = self.rect()
-        for kill_rect in tilemap.kill_rects_around(self.pos):
+        for kill_rect in tilemap.top_kill_rects_around(self.pos):
             if entity_rect.colliderect(kill_rect):
                 if frame_movement[0] > 0:
                     entity_rect.right = kill_rect.left
@@ -56,6 +58,21 @@ class PhysicsEntity:
                 if frame_movement[0] < 0:
                     entity_rect.left = kill_rect.right
                     self.collisions['left'] = True
+                self.pos[0] = entity_rect.x
+
+        entity_rect = self.rect()
+        for kill_rect in tilemap.right_kill_rects_around(self.pos):
+            if entity_rect.colliderect(kill_rect):
+                if frame_movement[0] > 0:
+                    entity_rect.right = kill_rect.left
+                    self.collisions['right'] = True
+                    if self.type == 'player':
+                        self.game.dead += 1
+                if frame_movement[0] < 0:
+                    entity_rect.left = kill_rect.right
+                    self.collisions['left'] = True
+                    if self.type == 'player':
+                        self.game.dead += 1
                 self.pos[0] = entity_rect.x
 
         self.pos[1] += frame_movement[1]
@@ -171,7 +188,7 @@ class Player(PhysicsEntity):
         frame_movement = (movement[0] + self.velocity[0], movement[1] + self.velocity[1])
 
         entity_rect = self.rect()
-        for kill_rect in tilemap.kill_rects_around(self.pos):
+        for kill_rect in tilemap.top_kill_rects_around(self.pos):
             if entity_rect.colliderect(kill_rect):
                 if frame_movement[1] > 0:
                     entity_rect.bottom = kill_rect.top
@@ -180,6 +197,20 @@ class Player(PhysicsEntity):
                 if frame_movement[1] < 0:
                     entity_rect.top = kill_rect.bottom
                     self.collisions['up'] = True
+                    self.game.dead += 1
+                self.pos[1] = entity_rect.y
+
+        entity_rect = self.rect()
+        for kill_rect in tilemap.right_kill_rects_around(self.pos):
+            if entity_rect.colliderect(kill_rect):
+                if frame_movement[1] > 0:
+                    entity_rect.bottom = kill_rect.top
+                    self.collisions['down'] = True
+                    self.velocity[1] = 0
+                if frame_movement[1] < 0:
+                    entity_rect.top = kill_rect.bottom
+                    self.collisions['up'] = True
+                    self.velocity[1] = 0
                 self.pos[1] = entity_rect.y
 
         if self.collisions['down']:

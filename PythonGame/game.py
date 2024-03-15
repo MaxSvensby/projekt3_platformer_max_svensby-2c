@@ -37,7 +37,10 @@ class Game:
             'large_decor': load_images('tiles/large_decor'),
             'rocks': load_images('tiles/rocks'),
             'bushes': load_images('tiles/bushes'),
-            'spikes': load_images('tiles/spikes'),
+            'spikes': load_images('tiles/top_spikes'),
+            'spikes_right': load_images('tiles/right_spikes'),
+            'spikes_bot': load_images('tiles/bot_spikes'),
+            'spikes_left': load_images('tiles/left_spikes'),
             'stone': load_images('tiles/stone_new'),
             'player': load_image('entities/player.png'),
             'background': load_image('background_new.png'),
@@ -220,6 +223,8 @@ class Game:
                 if self.dead >= 10:
                     self.transition = min(30, self.transition + 1)
                 if self.dead > 40:
+                    self.player.velocity[0] = 0
+                    self.player.velocity[1] = 0
                     self.load_level(self.level)
 
             self.scroll[0] += (self.player.rect().centerx - self.display.get_width() / 2 - self.scroll[0]) / 30

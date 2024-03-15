@@ -23,7 +23,10 @@ class Editor:
             'grass': load_images('tiles/grass_new'),
             'large_decor': load_images('tiles/large_decor'),
             'rocks': load_images('tiles/rocks'),
-            'spikes': load_images('tiles/spikes'),
+            'spikes': load_images('tiles/top_spikes'),
+            'spikes_right': load_images('tiles/right_spikes'),
+            'spikes_bot': load_images('tiles/bot_spikes'),
+            'spikes_left': load_images('tiles/left_spikes'),
             'bushes': load_images('tiles/bushes'),
             'stone': load_images('tiles/stone_new'),
             'spawners': load_images('tiles/spawners'),
@@ -55,8 +58,8 @@ class Editor:
             self.display.fill((0,0,0))
 
 
-            self.scroll[0] += (self.movement[1] - self.movement[0]) * 2
-            self.scroll[1] += (self.movement[3] - self.movement[2]) * 2
+            self.scroll[0] += (self.movement[1] - self.movement[0]) * 5
+            self.scroll[1] += (self.movement[3] - self.movement[2]) * 5
             render_scroll = (int(self.scroll[0]), int(self.scroll[1]))
 
             self.tilemap.render(self.display, offset=render_scroll)

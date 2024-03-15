@@ -17,7 +17,8 @@ AUTOTILE_MAP = {
 
 NEIGHBOR_OFFSETS = [(-1 , 0), (-1, -1), (0, -1), (1, -1), (1, 0), (0, 0), (-1, 1), (0, 1), (1, 1)]
 PHYSICS_TILES = {'grass', 'stone'}
-KILLABLE_OBJECT = {'spikes'}
+TOP_KILLABLE_OBJECT = {'spikes', 'spikes_bot'}
+RIGHT_KILLABLE_OBJECT = {'spikes_right', 'spikes_left'}
 AUTOTILE_TYPES = {'grass', 'stone'}
 
 
@@ -84,12 +85,23 @@ class Tilemap:
                 rects.append(pygame.Rect(tile['pos'][0] * self.tile_size, tile['pos'][1] * self.tile_size, self.tile_size, self.tile_size))
         return rects
     
-    def kill_rects_around(self, pos):
+    #kill rects
+    
+    def top_kill_rects_around(self, pos):
         kill_rects = []
         for tile in self.tiles_around(pos):
-            if tile['type'] in KILLABLE_OBJECT:
+            if tile['type'] in TOP_KILLABLE_OBJECT:
                 kill_rects.append(pygame.Rect(tile['pos'][0] * self.tile_size, tile['pos'][1] * self.tile_size, self.tile_size, self.tile_size))
         return kill_rects
+    
+    def right_kill_rects_around(self, pos):
+        kill_rects = []
+        for tile in self.tiles_around(pos):
+            if tile['type'] in RIGHT_KILLABLE_OBJECT:
+                kill_rects.append(pygame.Rect(tile['pos'][0] * self.tile_size, tile['pos'][1] * self.tile_size, self.tile_size, self.tile_size))
+        return kill_rects
+    
+    #end kill rects
     
     def autotile(self):
         for loc in self.tilemap:
