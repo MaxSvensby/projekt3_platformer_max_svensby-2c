@@ -30,6 +30,7 @@ class Game:
         self.main_menu_music_playing = False
 
         self.movement = [False, False]
+        self.checkpoint_claimed = False
 
         self.assets = {
             'decor': load_images('tiles/decor'),
@@ -172,12 +173,17 @@ class Game:
 
         self.enemies = []
         for spawner in self.tilemap.extract([('spawners', 0), ('spawners', 1)]):
-            if spawner['variant'] == 0:
+            if spawner['type'] == 'spawners' and spawner['variant'] == 0 and not self.checkpoint_claimed:
                 self.player.pos = spawner['pos']
                 self.player.air_time = 0
             else:
                 self.enemies.append(Enemy(self, spawner['pos'], (8, 15)))
-        
+
+        for checkpoint in self.tilemap.extract([('checkpoints', 1)]):
+            if checkpoint['type'] == 'checkpoints' and checkpoint['variant'] == 1: # variant 1 is the second look of the checkpoint where it has been claimed
+                self.player.pos = checkpoint['pos']
+                self.player.air_time = 0
+
         # Arrays that temporarily store things, which are bound to get removed
         self.projectiles = []
         self.particles = []
