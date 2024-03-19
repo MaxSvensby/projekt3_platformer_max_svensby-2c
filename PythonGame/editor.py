@@ -30,6 +30,7 @@ class Editor:
             'bushes': load_images('tiles/bushes'),
             'stone': load_images('tiles/stone_new'),
             'spawners': load_images('tiles/spawners'),
+            'checkpoints': load_images('tiles/checkpoints'),
         }
 
         

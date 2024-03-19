@@ -52,6 +52,15 @@ class PhysicsEntity:
                         if index == 2 and self.type == 'player':
                             self.game.dead += 1
                     self.pos[0] = entity_rect.x
+        
+        entity_rect = self.rect()
+        for tile in tilemap.tiles_around(self.pos):
+            if tile['type'] == 'checkpoints' and tile['variant'] == 0:
+                rect = pygame.Rect(tile['pos'][0] * tilemap.tile_size, tile['pos'][1] * tilemap.tile_size, tilemap.tile_size, tilemap.tile_size)
+                if entity_rect.colliderect(rect):
+                    tile_loc = str(tile['pos'][0]) + str(';') + str(tile['pos'][1])
+                    del tilemap.tilemap[tile_loc]
+                    #place new
 
         # Vertical collisions
         self.pos[1] += frame_movement[1]

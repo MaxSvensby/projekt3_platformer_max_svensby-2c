@@ -19,6 +19,7 @@ NEIGHBOR_OFFSETS = [(-1 , 0), (-1, -1), (0, -1), (1, -1), (1, 0), (0, 0), (-1, 1
 PHYSICS_TILES = {'grass', 'stone'}
 TOP_KILLABLE_OBJECT = {'spikes', 'spikes_bot'}
 RIGHT_KILLABLE_OBJECT = {'spikes_right', 'spikes_left'}
+CHECKPOINTS = {'checkpoints'}
 AUTOTILE_TYPES = {'grass', 'stone'}
 
 
@@ -82,6 +83,7 @@ class Tilemap:
         rects = []
         vertical_kill_rects = []
         horizontal_kill_rects = []
+        checkpoints = []
         for tile in self.tiles_around(pos):
             if tile['type'] in PHYSICS_TILES:
                 rects.append(pygame.Rect(tile['pos'][0] * self.tile_size, tile['pos'][1] * self.tile_size, self.tile_size, self.tile_size))
@@ -89,6 +91,8 @@ class Tilemap:
                 vertical_kill_rects.append(pygame.Rect(tile['pos'][0] * self.tile_size, tile['pos'][1] * self.tile_size, self.tile_size, self.tile_size))
             if tile['type'] in RIGHT_KILLABLE_OBJECT:
                 horizontal_kill_rects.append(pygame.Rect(tile['pos'][0] * self.tile_size, tile['pos'][1] * self.tile_size, self.tile_size, self.tile_size))
+            if tile['type'] in CHECKPOINTS:
+                checkpoints.append(pygame.Rect(tile['pos'][0] * self.tile_size, tile['pos'][1] * self.tile_size, self.tile_size, self.tile_size))
         return [rects, vertical_kill_rects, horizontal_kill_rects]
     
     def autotile(self):

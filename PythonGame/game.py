@@ -43,6 +43,7 @@ class Game:
             'spikes_bot': load_images('tiles/all_spikes/bot_spikes'),
             'spikes_left': load_images('tiles/all_spikes/left_spikes'),
             'stone': load_images('tiles/stone_new'),
+            'checkpoints': load_images('tiles/checkpoints'),
             'player': load_image('entities/player.png'),
             'background': load_image('background_new.png'),
             'clouds': load_images('clouds'),
@@ -179,7 +180,7 @@ class Game:
             else:
                 self.enemies.append(Enemy(self, spawner['pos'], (8, 15)))
 
-        for checkpoint in self.tilemap.extract([('checkpoints', 1)]):
+        for checkpoint in self.tilemap.extract([('checkpoints', 1)], keep=True):
             if checkpoint['type'] == 'checkpoints' and checkpoint['variant'] == 1: # variant 1 is the second look of the checkpoint where it has been claimed
                 self.player.pos = checkpoint['pos']
                 self.player.air_time = 0
