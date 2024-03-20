@@ -192,9 +192,10 @@ class Game:
 
         for checkpoint in self.tilemap.extract([('checkpoints', 0)], keep=True):
             if checkpoint['type'] == 'checkpoints' and checkpoint['variant'] == 0 and self.checkpoint_claimed != [0, 0]: # variant 1 is the second look of the checkpoint where it has been claimed
-                self.scroll = [checkpoint['pos'][0], checkpoint['pos'][1]]
-                self.player.pos = checkpoint['pos']
-                self.player.air_time = 0
+                if (checkpoint['pos'][0] // self.tilemap.tile_size) == self.checkpoint_claimed[0] and (checkpoint['pos'][1] // self.tilemap.tile_size) == self.checkpoint_claimed[1]:
+                    self.scroll = [checkpoint['pos'][0], checkpoint['pos'][1]]
+                    self.player.pos = checkpoint['pos']
+                    self.player.air_time = 0
 
         self.screenshake = 0
 
