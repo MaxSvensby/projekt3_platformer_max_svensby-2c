@@ -60,7 +60,8 @@ class PhysicsEntity:
                 if entity_rect.colliderect(rect):
                     tile_loc = str(tile['pos'][0]) + str(';') + str(tile['pos'][1])
                     del tilemap.tilemap[tile_loc]
-                    #place new
+                    tilemap.tilemap[tile_loc] = {'type': 'checkpoints', 'variant': 1, 'pos': tile['pos']}
+                    self.game.checkpoint_claimed = tile['pos']
 
         # Vertical collisions
         self.pos[1] += frame_movement[1]

@@ -30,7 +30,7 @@ class Game:
         self.main_menu_music_playing = False
 
         self.movement = [False, False]
-        self.checkpoint_claimed = False
+        self.checkpoint_claimed = [0, 0]
 
         self.assets = {
             'decor': load_images('tiles/decor'),
@@ -174,16 +174,11 @@ class Game:
 
         self.enemies = []
         for spawner in self.tilemap.extract([('spawners', 0), ('spawners', 1)]):
-            if spawner['type'] == 'spawners' and spawner['variant'] == 0 and not self.checkpoint_claimed:
+            if spawner['type'] == 'spawners' and spawner['variant'] == 0 and self.checkpoint_claimed == [0, 0]:
                 self.player.pos = spawner['pos']
                 self.player.air_time = 0
             else:
                 self.enemies.append(Enemy(self, spawner['pos'], (8, 15)))
-
-        for checkpoint in self.tilemap.extract([('checkpoints', 1)], keep=True):
-            if checkpoint['type'] == 'checkpoints' and checkpoint['variant'] == 1: # variant 1 is the second look of the checkpoint where it has been claimed
-                self.player.pos = checkpoint['pos']
-                self.player.air_time = 0
 
         # Arrays that temporarily store things, which are bound to get removed
         self.projectiles = []
@@ -194,6 +189,12 @@ class Game:
         self.dead = 0
         self.underwater = False  # adds a cool underwaterlooking effect when is set to True
         self.transition = -30
+
+        for checkpoint in self.tilemap.extract([('checkpoints', 0)], keep=True):
+            if checkpoint['type'] == 'checkpoints' and checkpoint['variant'] == 0 and self.checkpoint_claimed != [0, 0]: # variant 1 is the second look of the checkpoint where it has been claimed
+                self.scroll = [checkpoint['pos'][0], checkpoint['pos'][1]]
+                self.player.pos = checkpoint['pos']
+                self.player.air_time = 0
 
         self.screenshake = 0
 
