@@ -177,7 +177,7 @@ class Game:
             if spawner['type'] == 'spawners' and spawner['variant'] == 0 and self.checkpoint_claimed == [0, 0]:
                 self.player.pos = spawner['pos']
                 self.player.air_time = 0
-            else:
+            elif spawner['type'] == 'spawners' and spawner['variant'] == 1:
                 self.enemies.append(Enemy(self, spawner['pos'], (8, 15)))
 
         # Arrays that temporarily store things, which are bound to get removed
@@ -222,6 +222,7 @@ class Game:
             if not len(self.enemies):
                 self.transition += 1
                 if self.transition > 30:
+                    self.checkpoint_claimed = [0,0]
                     self.level = min(self.level + 1, len(os.listdir('data/maps')) - 1)
                     self.load_level(self.level)
             if self.transition < 0:
