@@ -1,7 +1,7 @@
 import sys
 import pygame
 
-from scripts.utils import load_images
+from scripts.utils import load_images, AN
 from scripts.tilemap import Tilemap
 
 
@@ -31,6 +31,7 @@ class Editor:
             'stone': load_images('tiles/stone_new'),
             'spawners': load_images('tiles/spawners'),
             'checkpoints': load_images('tiles/checkpoints'),
+            'collectables': load_images('tiles/collectables'),
         }
 
         

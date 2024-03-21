@@ -68,6 +68,10 @@ class PhysicsEntity:
                     else:
                         self.game.checkpoint_claimed = tile['pos']
 
+        entity_rect = self.rect()
+        for collectable in self.game.collectables:
+            if entity_rect.colliderect(collectable):
+                self.game.dead += 1
 
         # Vertical collisions
         self.pos[1] += frame_movement[1]

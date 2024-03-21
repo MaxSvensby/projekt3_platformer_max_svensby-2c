@@ -56,6 +56,7 @@ class Game:
             'player/wall_slide': Animation(load_images('entities/new_player/wall_slide')),
             'particle/leaf': Animation(load_images('particles/leaf'), img_dur=20, loop=False),
             'particle/particle': Animation(load_images('particles/particle'), img_dur=6, loop=False),
+            'particle/collectables': Animation(load_images('tiles/collectables'), img_dur=40, loop=True),
             'gun': load_image('gun.png'),
             'projectile': load_image('projectile.png'),
         }
@@ -157,7 +158,7 @@ class Game:
 
             if button_1.draw(button_1.hover(), self.screen):
                 run = False
-                self.level = 0
+                self.level = 1
                 self.load_level(self.level)
                 self.run()
 
@@ -171,6 +172,10 @@ class Game:
         self.leaf_spawners = []
         for tree in self.tilemap.extract([('large_decor', 2)], keep=True):
             self.leaf_spawners.append(pygame.Rect(4 + tree['pos'][0], 4 + tree['pos'][1], 23, 13))
+
+        self.collectables = []
+        for collectable in self.tilemap.extract([('collectables', 0)]):
+            self.collectables.append(pygame.Rect(collectable['pos'][0], collectable['pos'][1], 13, 12)) # change pos to topleft of the image not the whole picture
 
         self.enemies = []
         for spawner in self.tilemap.extract([('spawners', 0), ('spawners', 1)]):
@@ -189,6 +194,9 @@ class Game:
         self.dead = 0
         self.underwater = False  # adds a cool underwaterlooking effect when is set to True
         self.transition = -30
+
+        for rect in self.collectables:
+                self.particles.append(Particle(self, 'collectables', (rect.x, rect.y)))
 
         for checkpoint in self.tilemap.extract([('checkpoints', 0)], keep=True):
             if checkpoint['type'] == 'checkpoints' and checkpoint['variant'] == 0 and self.checkpoint_claimed != [0, 0]: # variant 1 is the second look of the checkpoint where it has been claimed
@@ -300,13 +308,16 @@ class Game:
             else:
                 self.display_2.blit(display_sillhouette, offset)
 
-            for particle in self.particles.copy():
+            for index, particle in enumerate(self.particles.copy()):
                 kill = particle.update()
                 particle.render(self.display, offset=render_scroll)
                 if particle.type == 'leaf':
                     particle.pos[0] += math.sin(particle.animation.frame * 0.035) * 0.3
                 if kill:
                     self.particles.remove(particle)
+                if particle.type == 'collectables':
+                    pass
+                    #self.particles[index].pos
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
