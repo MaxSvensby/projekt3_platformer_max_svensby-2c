@@ -25,6 +25,13 @@ def load_images(path):
         images.append(load_image(path + '/' + img_name))
     return images
 
+# for glow effect
+def circle_surf(radius, color):
+    surf = pygame.Surface((radius * 2, radius * 2))
+    pygame.draw.circle(surf, color, (radius, radius), radius)
+    surf.set_colorkey((0,0,0))
+    return surf
+
 # animation class used to animate characters and particles, works by flipping through a bunch of images
 class Animation:
     def __init__(self, images, img_dur=5, loop=True):                       #img_dur is the time it stays on the same image, loop is if it should keep to loop through the images or just do it once

@@ -5,7 +5,7 @@ import random
 
 import pygame
 
-from scripts.utils import load_image, load_images, Animation
+from scripts.utils import load_image, load_images, Animation, circle_surf
 from scripts.enteties import PhysicsEntity, Player, Enemy
 from scripts.tilemap import Tilemap
 from scripts.clouds import Clouds
@@ -13,6 +13,7 @@ from scripts.particle import Particle
 from scripts.spark import Spark
 from scripts.button import Button
 
+#finish-line needs to get powered by killing enemies, to then finish a level
 
 class Game: 
     def __init__(self):
@@ -31,6 +32,7 @@ class Game:
 
         self.movement = [False, False]
         self.checkpoint_claimed = [0, 0]
+        self.collectables_aquired = []
 
         self.assets = {
             'decor': load_images('tiles/decor'),
@@ -38,6 +40,7 @@ class Game:
             'large_decor': load_images('tiles/large_decor'),
             'rocks': load_images('tiles/rocks'),
             'bushes': load_images('tiles/bushes'),
+            'crystals': load_images('tiles/crystals'),
             'spikes': load_images('tiles/all_spikes/top_spikes'),
             'spikes_right': load_images('tiles/all_spikes/right_spikes'),
             'spikes_bot': load_images('tiles/all_spikes/bot_spikes'),
@@ -45,7 +48,7 @@ class Game:
             'stone': load_images('tiles/stone_new'),
             'checkpoints': load_images('tiles/checkpoints'),
             'player': load_image('entities/player.png'),
-            'background': load_image('background_new.png'),
+            'background': load_image('2.png'),
             'clouds': load_images('clouds'),
             'enemy/idle': Animation(load_images('entities/enemy/idle'), img_dur=6),
             'enemy/run': Animation(load_images('entities/enemy/run'), img_dur=4),
@@ -56,6 +59,7 @@ class Game:
             'player/wall_slide': Animation(load_images('entities/new_player/wall_slide')),
             'particle/leaf': Animation(load_images('particles/leaf'), img_dur=20, loop=False),
             'particle/particle': Animation(load_images('particles/particle'), img_dur=6, loop=False),
+            'particle/particle_rain': Animation(load_images('particles/particle'), img_dur=200, loop=False),
             'particle/collectables': Animation(load_images('tiles/collectables'), img_dur=40, loop=True),
             'gun': load_image('gun.png'),
             'projectile': load_image('projectile.png'),
@@ -158,7 +162,7 @@ class Game:
 
             if button_1.draw(button_1.hover(), self.screen):
                 run = False
-                self.level = 1
+                self.level = 0
                 self.load_level(self.level)
                 self.run()
 
@@ -170,12 +174,12 @@ class Game:
         self.tilemap.load('data/maps/' + str(map_id) + '.json')
 
         self.leaf_spawners = []
-        for tree in self.tilemap.extract([('large_decor', 2)], keep=True):
-            self.leaf_spawners.append(pygame.Rect(4 + tree['pos'][0], 4 + tree['pos'][1], 23, 13))
+        for tree in self.tilemap.extract([('bushes', 1), ('bushes', 0)], keep=True):
+            self.leaf_spawners.append(pygame.Rect(2 + tree['pos'][0], 4 + tree['pos'][1], 22, 18))
 
         self.collectables = []
         for collectable in self.tilemap.extract([('collectables', 0)]):
-            self.collectables.append(pygame.Rect(collectable['pos'][0], collectable['pos'][1], 13, 12)) # change pos to topleft of the image not the whole picture
+            self.collectables.append(pygame.Rect(collectable['pos'][0], collectable['pos'][1], 13, 13)) # change pos to topleft of the image not the whole picture
 
         self.enemies = []
         for spawner in self.tilemap.extract([('spawners', 0), ('spawners', 1)]):
@@ -185,9 +189,23 @@ class Game:
             elif spawner['type'] == 'spawners' and spawner['variant'] == 1:
                 self.enemies.append(Enemy(self, spawner['pos'], (8, 15)))
 
+        #print(self.tilemap.tilemap)
+        self.current_mapsize = [0, 0, 0, 0]
+        for tile in self.tilemap.tilemap:
+            if int(tile.split(';')[0]) < self.current_mapsize[0]:
+                self.current_mapsize[0] = int(tile.split(';')[0])
+            elif int(tile.split(';')[0]) > self.current_mapsize[1]:
+                self.current_mapsize[1] = int(tile.split(';')[0])
+
+            if int(tile.split(';')[1]) < self.current_mapsize[2]:
+                self.current_mapsize[2] = int(tile.split(';')[1])
+            elif int(tile.split(';')[1]) > self.current_mapsize[3]:
+                self.current_mapsize[3] = int(tile.split(';')[1])
+
         # Arrays that temporarily store things, which are bound to get removed
         self.projectiles = []
         self.particles = []
+        self.glowing_particles = []
         self.sparks = []
 
         self.scroll = [0, 0]
@@ -206,6 +224,7 @@ class Game:
                     self.player.air_time = 0
 
         self.screenshake = 0
+        print(self.collectables_aquired)
 
     def run(self):
 
@@ -308,16 +327,25 @@ class Game:
             else:
                 self.display_2.blit(display_sillhouette, offset)
 
+            #self.particles.append(Particle(self, 'particle_rain', (self.player.pos[0] + random.randint(-400, 400), self.player.pos[1] - 200), velocity=[0, 1], frame=0))
+
+
             for index, particle in enumerate(self.particles.copy()):
                 kill = particle.update()
-                particle.render(self.display, offset=render_scroll)
+                if particle.type != 'collectables':
+                    particle.render(self.display, offset=render_scroll)
+                else:
+                    particle.render(self.display, offset=render_scroll, gem=True)
+
                 if particle.type == 'leaf':
                     particle.pos[0] += math.sin(particle.animation.frame * 0.035) * 0.3
                 if kill:
                     self.particles.remove(particle)
-                if particle.type == 'collectables':
+                if particle.type == 'particle_rain':
                     pass
-                    #self.particles[index].pos
+                    #radius = (particle.animation.frame / particle.animation.img_duration) * 2
+                    #self.display.blit(circle_surf(radius, (200,20,20)), ((particle.pos[0] - render_scroll[0] - radius), (particle.pos[1] - render_scroll[1] - radius)), special_flags=pygame.BLEND_RGB_ADD)
+
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -365,6 +393,36 @@ class Game:
 
             if not self.underwater:
                 self.display_2.blit(self.display, (0,0))
+
+            
+            if len(self.glowing_particles) < 50:
+                self.glowing_particles.append([[
+                    random.randint(self.current_mapsize[0] * self.tilemap.tile_size, self.current_mapsize[1] * self.tilemap.tile_size)
+                    , random.randint(self.current_mapsize[2] * self.tilemap.tile_size - render_scroll[1], self.current_mapsize[3] * self.tilemap.tile_size - render_scroll[1])
+                    ], [random.randint(-2, 2) / 10, random.randint(-2, 2) / 10], random.randint(2, 2)])
+            elif random.randint(1, 20) == 20:
+                self.glowing_particles.append([[
+                    random.randint(self.current_mapsize[0] * self.tilemap.tile_size, self.current_mapsize[1] * self.tilemap.tile_size)
+                    , random.randint(self.current_mapsize[2] * self.tilemap.tile_size - render_scroll[1], self.current_mapsize[3] * self.tilemap.tile_size - render_scroll[1])
+                    ], [random.randint(-2, 2) / 10, random.randint(-2, 2) / 10], random.randint(2, 2)])
+
+            for particle in self.glowing_particles:
+                particle[0][0] += particle[1][0]
+                particle[0][1] += particle[1][1]
+                particle[2] -= 0.001
+                #particle[1][1] += 0.1
+
+                self.display_2.blit(circle_surf(particle[2], (150,150,150)), ((int(particle[0][0] - render_scroll[0] - particle[2])), (int(particle[0][1] - render_scroll[1] - particle[2]))), special_flags=pygame.BLEND_RGB_ADD)
+                #pygame.draw.circle(self.display_2, (255,255,255, 0.3), [int(particle[0][0] - render_scroll[0]), int(particle[0][1] - render_scroll[1])], int(particle[2]))
+
+                for x in range(2, 10):
+                    radius = particle[2] * x
+                    self.display_2.blit(circle_surf(radius, (2,2,2)), ((int(particle[0][0] - render_scroll[0] - radius)), (int(particle[0][1] - render_scroll[1] - radius))), special_flags=pygame.BLEND_RGB_ADD)
+
+                if particle[2] <= 0:
+                    self.glowing_particles.remove(particle)
+                if (particle[0][0] - render_scroll[0]) < (self.player.pos[0] - render_scroll[0] - 300) or (particle[0][0] - render_scroll[0]) > (self.player.pos[0] - render_scroll[0] + 300) or particle[0][1] < (self.player.pos[1] - render_scroll[1] - 300) or particle[0][1] > (self.player.pos[1] - render_scroll[1] + 300):
+                    self.glowing_particles.remove(particle)
 
             screenshake_offset = (random.random() * self.screenshake - self.screenshake / 2, random.random() * self.screenshake - self.screenshake / 2)
             self.screen.blit(pygame.transform.scale(self.display_2, self.screen.get_size()), screenshake_offset)

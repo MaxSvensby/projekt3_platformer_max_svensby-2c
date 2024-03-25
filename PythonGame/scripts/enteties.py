@@ -71,7 +71,16 @@ class PhysicsEntity:
         entity_rect = self.rect()
         for collectable in self.game.collectables:
             if entity_rect.colliderect(collectable):
-                self.game.dead += 1
+                for particle in self.game.particles.copy():
+                    if particle.pos == [collectable.x, collectable.y]:
+                        self.game.particles.remove(particle)
+                        self.game.collectables.remove(collectable)
+                        is_collectable_aquired = False
+                        for rect in self.game.collectables_aquired:
+                            if rect == collectable:
+                                is_collectable_aquired = True
+                        if not is_collectable_aquired:
+                            self.game.collectables_aquired += [collectable]
 
         # Vertical collisions
         self.pos[1] += frame_movement[1]

@@ -1,7 +1,7 @@
 import sys
 import pygame
 
-from scripts.utils import load_images, AN
+from scripts.utils import load_images
 from scripts.tilemap import Tilemap
 
 
@@ -28,6 +28,7 @@ class Editor:
             'spikes_bot': load_images('tiles/all_spikes/bot_spikes'),
             'spikes_left': load_images('tiles/all_spikes/left_spikes'),
             'bushes': load_images('tiles/bushes'),
+            'crystals': load_images('tiles/crystals'),
             'stone': load_images('tiles/stone_new'),
             'spawners': load_images('tiles/spawners'),
             'checkpoints': load_images('tiles/checkpoints'),
