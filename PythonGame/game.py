@@ -2,6 +2,7 @@ import os
 import sys
 import math
 import random
+from ast import literal_eval
 
 import pygame
 
@@ -29,6 +30,14 @@ class Game:
 
         self.fullscreen = False
         self.main_menu_music_playing = False
+        self.timer = [0,0,0]
+
+        if open("external_data.txt", "r").readline(-1):
+            self.best_time = open("external_data.txt", "r").readline(-1)
+            self.best_time = literal_eval(self.best_time)
+            open("external_data.txt", "r").close()
+        else:
+            self.best_time = [0,0,0]
 
         self.movement = [False, False]
         self.checkpoint_claimed = [0, 0]
@@ -247,6 +256,28 @@ class Game:
             self.screenshake = max(0, self.screenshake - 1)
 
             if not len(self.enemies):
+                if self.timer[0] < self.best_time[0]:
+                    file = open("external_data.txt", "w")
+                    file.write(str(self.timer))
+                    file.close()
+                elif self.timer[0] == self.best_time[0] and self.timer[1] < self.best_time[1]:
+                    file = open("external_data.txt", "w")
+                    file.write(str(self.timer))
+                    file.close()
+                elif self.timer[0] == self.best_time[0] and self.timer[1] == self.best_time[1] and self.timer[2] < self.best_time[2]:
+                    file = open("external_data.txt", "w")
+                    file.write(str(self.timer))
+                    file.close()
+
+                if open("external_data.txt", "r").readline(-1):
+                    self.best_time = open("external_data.txt", "r").readline(-1)
+                    self.best_time = literal_eval(self.best_time)
+                    open("external_data.txt", "r").close()
+                else:
+                    self.best_time = [0,0,0]
+
+                self.timer = [0,0,0]
+                
                 self.transition += 1
                 if self.transition > 30:
                     self.checkpoint_claimed = [0,0]
@@ -426,6 +457,22 @@ class Game:
 
             screenshake_offset = (random.random() * self.screenshake - self.screenshake / 2, random.random() * self.screenshake - self.screenshake / 2)
             self.screen.blit(pygame.transform.scale(self.display_2, self.screen.get_size()), screenshake_offset)
+
+            self.timer_font = pygame.font.SysFont('Times New Roman', 50)
+            self.timer_render = self.timer_font.render((str(self.timer[0]) if self.timer[0] >= 10 else '0' + str(self.timer[0])) + ':' + (str(self.timer[1]) if self.timer[1] >= 10 else '0' + str(self.timer[1])) + ':' + str(int(self.timer[2])), True, (255,255,255))
+            self.best_time_font = pygame.font.SysFont('Times New Roman', 20)
+            self.best_time_render = self.best_time_font.render('Best: ' + (str(self.best_time[0]) if self.best_time[0] >= 10 else '0' + str(self.best_time[0])) + ':' + (str(self.best_time[1]) if self.best_time[1] >= 10 else '0' + str(self.best_time[1])) + ':' + (str(int(self.best_time[2])) if self.best_time[2] >= 10 else '0' + str(self.best_time[2])), True, (255,255,255))
+            self.screen.blit(self.timer_render, (20, 20))
+            self.screen.blit(self.best_time_render, (20, 70))
+
+            self.timer[2] += (5/3)
+            if int(self.timer[2]) == 100:
+                self.timer[1] += 1
+                self.timer[2] = 0
+            elif self.timer[1] == 60:
+                self.timer[0] += 1
+                self.timer[1] = 0
+
             pygame.display.update()
             self.clock.tick(60)
 
