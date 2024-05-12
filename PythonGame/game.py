@@ -14,8 +14,6 @@ from scripts.particle import Particle
 from scripts.spark import Spark
 from scripts.button import Button
 
-#finish-line needs to get powered by killing enemies, to then finish a level
-
 # The game class, it is where the main game loop runs, and also has some game properties
 class Game: 
     def __init__(self):
@@ -305,34 +303,35 @@ class Game:
 
             # Checking if all enemies are defeated
             if not len(self.enemies):
-                # Checking and updating best time if needed
-                if self.timer[0] < self.best_time[0]:
-                    file = open("external_data.txt", "w")
-                    file.write(str(self.timer))
-                    file.close()
-                elif self.timer[0] == self.best_time[0] and self.timer[1] < self.best_time[1]:
-                    file = open("external_data.txt", "w")
-                    file.write(str(self.timer))
-                    file.close()
-                elif self.timer[0] == self.best_time[0] and self.timer[1] == self.best_time[1] and self.timer[2] < self.best_time[2]:
-                    file = open("external_data.txt", "w")
-                    file.write(str(self.timer))
-                    file.close()
-                
-                # Updating best time from file
-                if open("external_data.txt", "r").readline(-1):
-                    self.best_time = open("external_data.txt", "r").readline(-1)
-                    self.best_time = literal_eval(self.best_time)
-                    open("external_data.txt", "r").close()
-                else:
-                    self.best_time = [0,0,0]
 
-                # Resetting timer
-                self.timer = [0,0,0]
-                
                 # Managing level transition
                 self.transition += 1
                 if self.transition > 30:
+                    # Checking and updating best time if needed
+                    if self.timer[0] < self.best_time[0]:
+                        file = open("external_data.txt", "w")
+                        file.write(str(self.timer))
+                        file.close()
+                    elif self.timer[0] == self.best_time[0] and self.timer[1] < self.best_time[1]:
+                        file = open("external_data.txt", "w")
+                        file.write(str(self.timer))
+                        file.close()
+                    elif self.timer[0] == self.best_time[0] and self.timer[1] == self.best_time[1] and self.timer[2] < self.best_time[2]:
+                        file = open("external_data.txt", "w")
+                        file.write(str(self.timer))
+                        file.close()
+                    
+                    # Updating best time from file
+                    if open("external_data.txt", "r").readline(-1):
+                        self.best_time = open("external_data.txt", "r").readline(-1)
+                        self.best_time = literal_eval(self.best_time)
+                        open("external_data.txt", "r").close()
+                    else:
+                        self.best_time = [0,0,0]
+
+                    # Resetting timer
+                    self.timer = [0,0,0]
+
                     self.checkpoint_claimed = [0,0]
                     self.level = min(self.level + 1, len(os.listdir('data/maps')) - 1)
                     self.load_level(self.level)
@@ -469,6 +468,7 @@ class Game:
                         else:
                             self.screen = pygame.display.set_mode((960, 720))
                     if event.key == pygame.K_ESCAPE:
+                        self.timer = [0,0,0]
                         run = False
                         self.sfx['ambience'].stop()
                         pygame.mixer.music.stop()

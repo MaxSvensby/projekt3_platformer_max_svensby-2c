@@ -1,7 +1,8 @@
 import pygame
 
-#button class
+#Button class
 class Button():
+	# Initialize variabels
 	def __init__(self, x, y, image, hover_image, scale):
 		width = image.get_width()
 		height = image.get_height()
@@ -11,6 +12,7 @@ class Button():
 		self.rect.topleft = (x, y)
 		self.clicked = False
 
+	# Draw method to blit button to the screen, also record mouse clicks
 	def draw(self, hover, surface):
 		action = False
 		#get mouse position
@@ -28,10 +30,12 @@ class Button():
 		#draw button on screen
 		surface.blit(self.image if not hover else self.hover_image, (self.rect.x, self.rect.y))
 
+		# return if clicked
 		return action
 	
+	# Check if button is hovered
 	def hover(self):
 
 		pos = pygame.mouse.get_pos()
-
+		# if mouse collides with button
 		return self.rect.collidepoint(pos)
